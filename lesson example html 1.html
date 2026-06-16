@@ -54,3 +54,247 @@
   </script>
 </body>
 </html>
+// ...existing code...
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Topic Tutor — Introduction</title>
+  <meta name="description" content="A concise, accessible learning site scaffold for teaching a specific topic.">
+  <link rel="stylesheet" href="css/style.css">
+
+  <!-- Lively visuals & small local styles -->
+  <style>
+    /* subtle animations and lively UI */
+    .hero { transition: transform .6s ease, box-shadow .6s ease; will-change: transform; }
+    .hero:hover { transform: translateY(-6px); box-shadow: 0 10px 30px rgba(2,32,71,.08); }
+    .chip { display:inline-block;padding:.35rem .6rem;border-radius:999px;background:#eef6ff;color:#0366d6;margin:.25rem;cursor:pointer;transition:transform .15s; }
+    .chip:hover{ transform:translateY(-3px);box-shadow:0 6px 18px rgba(3,102,214,.08); }
+    .research .controls{display:flex;gap:.5rem;align-items:center;margin-top:.5rem}
+    .research input[type="search"]{flex:1;padding:.6rem;border-radius:8px;border:1px solid #e3e7ee}
+    .result{padding:.75rem;border-radius:8px;background:#fff;margin:.5rem 0;box-shadow:0 2px 6px rgba(10,20,40,.03)}
+    .result h4{margin:0 0 .25rem}
+    .muted{color:#6b7280}
+    .pulse{animation:pulse 2s infinite ease-in-out}
+    @keyframes pulse{0%{opacity:1}50%{opacity:.6}100%{opacity:1}}
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="brand" href="index.html">Topic Tutor</a>
+      <nav class="main-nav" aria-label="Main navigation">
+        <ul>
+          <li><a href="#lessons">Lessons</a></li>
+          <li><a href="#about">About</a></li>
+          <li><a href="lesson-example.html">Sample Lesson</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="container">
+        <h1>Learn [Your Topic]</h1>
+        <p class="lead">Short description of the topic and the learning goals.</p>
+        <a class="cta" href="#lessons">Start Learning</a>
+      </div>
+    </section>
+
+    <section id="lessons" class="lessons container">
+      <h2>Lessons</h2>
+      <p class="muted">Bite-sized lessons, exercises, and resources.</p>
+      <ul class="lesson-grid">
+        <li class="lesson">
+          <h3>Lesson 1</h3>
+          <p>Core concept overview with examples.</p>
+          <a class="link" href="lesson-example.html">Open</a>
+        </li>
+        <li class="lesson">
+          <h3>Lesson 2</h3>
+          <p>Build on the first concept with practice.</p>
+          <a class="link" href="#">Open</a>
+        </li>
+        <li class="lesson">
+          <h3>Lesson 3</h3>
+          <p>Advanced ideas and summary.</p>
+          <a class="link" href="#">Open</a>
+        </li>
+      </ul>
+    </section>
+
+    <!-- Research / Free search section (lively + TTS + quick open) -->
+    <section id="research" class="research container" aria-label="Free research">
+      <h2>Research topics (free)</h2>
+      <p class="muted">Search the web for summaries and open full search results. Uses a public instant-answer API where available — for full results open in a new tab.</p>
+
+      <div class="controls">
+        <input id="research-query" type="search" placeholder="Try: factorisation JSS3, quadratic factorization, common factors..." aria-label="Search query">
+        <button id="research-btn" class="cta">Search</button>
+        <button id="research-tts" title="Read aloud">🔊</button>
+      </div>
+
+      <div id="suggestions" aria-hidden="false" style="margin-top:.5rem;">
+        <span class="chip">factorisation JSS3</span>
+        <span class="chip">how to factorise quadratics</span>
+        <span class="chip">common factor method</span>
+      </div>
+
+      <div id="research-results" style="margin-top:1rem"></div>
+    </section>
+
+    <section id="about" class="about container">
+      <h2>About this course</h2>
+      <p>This scaffold uses semantic HTML, clear headings, and accessible controls to provide a strong foundation for teaching any topic.</p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>&copy; <span id="year"></span> Topic Tutor — Built for teaching.</p>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Elements
+    const qInput = document.getElementById('research-query');
+    const qBtn = document.getElementById('research-btn');
+    const ttsBtn = document.getElementById('research-tts');
+    const resultsEl = document.getElementById('research-results');
+    const suggestions = document.getElementById('suggestions');
+
+    // click suggestion chips
+    suggestions?.addEventListener('click', e => {
+      const chip = e.target.closest('.chip');
+      if (!chip) return;
+      qInput.value = chip.textContent.trim();
+      qBtn.click();
+    });
+
+    // simple debounce
+    let debounce;
+    qInput.addEventListener('input', () => {
+      clearTimeout(debounce);
+      debounce = setTimeout(() => {
+        // small UX: show helper chips when typing
+        suggestions.style.opacity = qInput.value ? '0.5' : '1';
+      }, 300);
+    });
+
+    // Search using DuckDuckGo Instant Answer (no API key). If CORS blocked, fallback to opening search.
+    async function searchQuery(q){
+      resultsEl.innerHTML = '<div class="result pulse">Searching…</div>';
+      if (!q) { resultsEl.innerHTML = '<div class="result muted">Enter a query.</div>'; return; }
+      const url = 'https://api.duckduckgo.com/?q=' + encodeURIComponent(q) + '&format=json&no_redirect=1&no_html=1';
+      try {
+        const resp = await fetch(url);
+        if (!resp.ok) throw new Error('no-json');
+        const data = await resp.json();
+        renderDuckResults(q, data);
+      } catch (err) {
+        // fallback: show link to open search in new tab
+        resultsEl.innerHTML = `
+          <div class="result">
+            <h4>No instant summary available</h4>
+            <p class="muted">Open full search results in a new tab.</p>
+            <a class="link" href="https://duckduckgo.com/?q=${encodeURIComponent(q)}" target="_blank" rel="noopener">Open DuckDuckGo</a>
+            <a class="link" href="https://www.google.com/search?q=${encodeURIComponent(q)}" target="_blank" rel="noopener" style="margin-left:1rem">Open Google</a>
+          </div>`;
+      }
+    }
+
+    function renderDuckResults(q, data){
+      resultsEl.innerHTML = '';
+      // Abstract / summary
+      if (data.Abstract || data.Heading){
+        const title = data.Heading || q;
+        const summary = data.Abstract || data.AbstractText || '';
+        const box = document.createElement('div');
+        box.className = 'result';
+        box.innerHTML = `
+          <h4>${escapeHtml(title)}</h4>
+          <p>${escapeHtml(summary) || '<span class="muted">No short summary available.</span>'}</p>
+          <div style="margin-top:.5rem">
+            <button data-action="open" data-q="${encodeURIComponent(q)}">Open search</button>
+            <button data-action="read" data-text="${escapeAttr((title + '. ' + summary).trim())}">Read</button>
+          </div>
+        `;
+        resultsEl.appendChild(box);
+      }
+
+      // Related topics
+      if (Array.isArray(data.RelatedTopics) && data.RelatedTopics.length){
+        data.RelatedTopics.slice(0,6).forEach(rt => {
+          // some items have Text + FirstURL, some have Topics array
+          const text = rt.Text || (rt.Topics && rt.Topics[0] && rt.Topics[0].Text) || '';
+          const url = rt.FirstURL || (rt.Topics && rt.Topics[0] && rt.Topics[0].FirstURL) || '';
+          if (!text) return;
+          const el = document.createElement('div');
+          el.className = 'result';
+          el.innerHTML = `
+            <h4>${escapeHtml(text.split(' - ')[0])}</h4>
+            <p class="muted">${escapeHtml(text)}</p>
+            <div style="margin-top:.5rem">
+              <button data-action="open-url" data-url="${escapeAttr(url || 'https://duckduckgo.com/?q=' + encodeURIComponent(text))}">Open</button>
+              <button data-action="read" data-text="${escapeAttr(text)}">Read</button>
+            </div>
+          `;
+          resultsEl.appendChild(el);
+        });
+      }
+
+      // If nothing rendered, show open links
+      if (!resultsEl.children.length){
+        resultsEl.innerHTML = `<div class="result"><p class="muted">No instant results — <a href="https://duckduckgo.com/?q=${encodeURIComponent(q)}" target="_blank">open search</a></p></div>`;
+      }
+    }
+
+    // Delegated click handlers for result actions
+    resultsEl.addEventListener('click', e => {
+      const btn = e.target.closest('button');
+      if (!btn) return;
+      const action = btn.dataset.action;
+      if (action === 'open'){
+        const q = decodeURIComponent(btn.dataset.q || '');
+        window.open('https://duckduckgo.com/?q=' + encodeURIComponent(q), '_blank', 'noopener');
+      } else if (action === 'open-url'){
+        const url = btn.dataset.url;
+        window.open(url, '_blank', 'noopener');
+      } else if (action === 'read'){
+        const text = btn.dataset.text || '';
+        speakText(stripTags(text));
+      }
+    });
+
+    // TTS button reads current query + first result text
+    ttsBtn.addEventListener('click', async () => {
+      const q = qInput.value.trim();
+      if (!q) return speakText('Please enter a topic to research.');
+      // prefer first result summary
+      const first = resultsEl.querySelector('.result');
+      const candidate = first ? stripTags(first.innerText || '') : q;
+      speakText(q + '. ' + candidate);
+    });
+
+    qBtn.addEventListener('click', () => searchQuery(qInput.value.trim()));
+    qInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); qBtn.click(); } });
+
+    // Utilities
+    function speakText(text){
+      if (!window.speechSynthesis) return alert('Speech not supported in this browser.');
+      const t = new SpeechSynthesisUtterance(text);
+      t.rate = 1;
+      speechSynthesis.cancel();
+      speechSynthesis.speak(t);
+    }
+    function stripTags(s){ return (s||'').replace(/<\/?[^>]+(>|$)/g, ''); }
+    function escapeHtml(s){ const div=document.createElement('div'); div.textContent = s||''; return div.innerHTML; }
+    function escapeAttr(s){ return (s||'').replace(/"/g,'&quot;'); }
+  </script>
+</body>
+</html>
+// ...existing code...
