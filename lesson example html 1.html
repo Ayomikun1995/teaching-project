@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Lesson Example — Topic Tutor</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="brand" href="index.html">Topic Tutor</a>
+      <nav class="main-nav" aria-label="Lesson navigation">
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="#exercise">Exercise</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <article>
+      <h1>Lesson Example: Core Idea</h1>
+      <p class="muted">Estimated time: 10 minutes</p>
+      <section>
+        <h2>Overview</h2>
+        <p>Explain the core idea here with a short example.</p>
+      </section>
+
+      <section id="exercise">
+        <h2>Quick Exercise</h2>
+        <p>Try this short exercise to test understanding.</p>
+        <ol>
+          <li>Read the example.</li>
+          <li>Answer the question in the notes below.</li>
+        </ol>
+      </section>
+
+      <nav aria-label="Lesson actions">
+        <a class="link" href="index.html">Back to lessons</a>
+      </nav>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>&copy; <span id="year"></span> Topic Tutor</p>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>

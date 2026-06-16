@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Topic Tutor — Introduction</title>
+  <meta name="description" content="A concise, accessible learning site scaffold for teaching a specific topic.">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="brand" href="index.html">Topic Tutor</a>
+      <nav class="main-nav" aria-label="Main navigation">
+        <ul>
+          <li><a href="#lessons">Lessons</a></li>
+          <li><a href="#about">About</a></li>
+          <li><a href="lesson-example.html">Sample Lesson</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="container">
+        <h1>Learn [Your Topic]</h1>
+        <p class="lead">Short description of the topic and the learning goals.</p>
+        <a class="cta" href="#lessons">Start Learning</a>
+      </div>
+    </section>
+
+    <section id="lessons" class="lessons container">
+      <h2>Lessons</h2>
+      <p class="muted">Bite-sized lessons, exercises, and resources.</p>
+      <ul class="lesson-grid">
+        <li class="lesson">
+          <h3>Lesson 1</h3>
+          <p>Core concept overview with examples.</p>
+          <a class="link" href="lesson-example.html">Open</a>
+        </li>
+        <li class="lesson">
+          <h3>Lesson 2</h3>
+          <p>Build on the first concept with practice.</p>
+          <a class="link" href="#">Open</a>
+        </li>
+        <li class="lesson">
+          <h3>Lesson 3</h3>
+          <p>Advanced ideas and summary.</p>
+          <a class="link" href="#">Open</a>
+        </li>
+      </ul>
+    </section>
+
+    <section id="about" class="about container">
+      <h2>About this course</h2>
+      <p>This scaffold uses semantic HTML, clear headings, and accessible controls to provide a strong foundation for teaching any topic.</p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>&copy; <span id="year"></span> Topic Tutor — Built for teaching.</p>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>

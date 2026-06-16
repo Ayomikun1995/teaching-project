@@ -1,0 +1,66 @@
+// ...existing code...
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <!-- Content Security Policy: allow self and CDN for sanitizer; block plugins/frames -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' https://www.virustotal.com https://api.example.com; object-src 'none'; frame-ancestors 'none'; base-uri 'self';">
+  <meta name="referrer" content="no-referrer" />
+  <title>Teaching Foundation — Secure</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <header>
+    <h1>Teaching Foundation (Secure)</h1>
+    <p id="status" aria-live="polite"></p>
+  </header>
+
+  <main>
+    <section id="lesson-editor" aria-label="Lesson editor">
+      <h2>Create Lesson</h2>
+      <label for="lesson-title">Title</label>
+      <input id="lesson-title" type="text" maxlength="150" />
+      <label for="lesson-content">Content (HTML allowed; sanitized)</label>
+      <textarea id="lesson-content" rows="8" placeholder="Write lesson content..."></textarea>
+      <div class="controls">
+        <button id="preview-btn">Sanitize & Preview</button>
+        <button id="speak-btn">Read Lesson</button>
+      </div>
+      <h3>Preview</h3>
+      <article id="lesson-preview" class="card" tabindex="0"></article>
+    </section>
+
+    <section id="assignments" aria-label="Assignment generator">
+      <h2>Assignment Generator</h2>
+      <label for="assign-title">Assignment Title</label>
+      <input id="assign-title" type="text" />
+      <div id="questions"></div>
+      <div class="controls">
+        <button id="add-question">Add Question</button>
+        <button id="export-assign">Export JSON</button>
+        <button id="download-assign">Download .json</button>
+      </div>
+    </section>
+
+    <section id="upload-scan" aria-label="File scan">
+      <h2>File Upload & Virus Scan</h2>
+      <input id="file-input" type="file" />
+      <div class="controls">
+        <button id="scan-btn">Scan File</button>
+      </div>
+      <p id="scan-result" aria-live="polite"></p>
+      <small>Note: client-side hash computed. Server must perform actual antivirus scanning (recommended: ClamAV/VirusTotal).</small>
+    </section>
+  </main>
+
+  <footer>
+    <p>Secure teaching platform — no inline eval, sanitized inputs, TTS and assignment export.</p>
+  </footer>
+
+  <!-- DOMPurify (for sanitization) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/2.4.0/purify.min.js" integrity="sha512-+Qm2z1D0kqg6SX7s0n8mN6D6K6l4gQmV1z3lC9t0FqZb1H6t/2t4sE2kX0bF0s3Ybq9xD2y7y8q3n5r0J1bQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
+// ...existing code...
